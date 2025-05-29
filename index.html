@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=895, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      overflow: hidden;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="glcanvas"></canvas>
+  <script type="module">
+    import * as THREE from "https://cdn.skypack.dev/three@0.150.1";
+    import { FontLoader } from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/loaders/FontLoader.js";
+    import { TextGeometry } from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/geometries/TextGeometry.js";
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 895 / 420, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("glcanvas"), alpha: true, antialias: true });
+    renderer.setSize(895, 420);
+    camera.position.z = 240;
+
+    const fontLoader = new FontLoader();
+    fontLoader.load("https://threejs.org/examples/fonts/helvetiker_bold.typeface.json", function (font) {
+      const geometry = new TextGeometry(
+        "As a designer and mindful yogi, I blend empathy, clarity, and flow to create meaningful experiences across every stage of the product lifecycle.",
+        {
+          font: font,
+          size: 4,
+          height: 1,
+          curveSegments: 12,
+          bevelEnabled: false
+        }
+      );
+
+      const material = new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          void main() {
+            float dist = distance(vUv, vec2(0.5));
+            float alpha = smoothstep(0.2, 0.6, dist);
+            gl_FragColor = vec4(vec3(0.255), 1.0 - alpha);
+          }
+        `,
+        transparent: true
+      });
+
+      const textMesh = new THREE.Mesh(geometry, material);
+      geometry.center();
+      scene.add(textMesh);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        textMesh.rotation.y += 0.0015;
+        renderer.render(scene, camera);
+      }
+      animate();
+    });
+
+    window.addEventListener("resize", () => {
+      camera.aspect = 895 / 420;
+      camera.updateProjectionMatrix();
+      renderer.setSize(895, 420);
+    });
+  </script>
+</body>
+</html>
