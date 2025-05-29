@@ -18,23 +18,23 @@
       display: block;
     }
   </style>
+  <!-- ✅ Add Three.js and examples scripts via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/FontLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/geometries/TextGeometry.js"></script>
 </head>
 <body>
   <canvas id="glcanvas"></canvas>
-  <script type="module">
-    import * as THREE from "https://cdn.skypack.dev/three@0.150.1";
-    import { FontLoader } from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/loaders/FontLoader.js";
-    import { TextGeometry } from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/geometries/TextGeometry.js";
-
+  <script>
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 895 / 420, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("glcanvas"), alpha: true, antialias: true });
     renderer.setSize(895, 420);
     camera.position.z = 240;
 
-    const fontLoader = new FontLoader();
-    fontLoader.load("https://threejs.org/examples/fonts/helvetiker_bold.typeface.json", function (font) {
-      const geometry = new TextGeometry(
+    const loader = new THREE.FontLoader();
+    loader.load("https://threejs.org/examples/fonts/helvetiker_bold.typeface.json", function (font) {
+      const geometry = new THREE.TextGeometry(
         "As a designer and mindful yogi, I blend empathy, clarity, and flow to create meaningful experiences across every stage of the product lifecycle.",
         {
           font: font,
